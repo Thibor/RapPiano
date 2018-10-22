@@ -1,0 +1,86 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Demo</title>
+<link rel="stylesheet" href="jsRapKnob.css" />
+<link rel="stylesheet" href="jsRapPiano.css" />
+<link rel="stylesheet" href="index.css" />
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="jsRapKnob.js"></script>
+<script src="jsRapPiano.js"></script>
+<script>
+let WF =['Sine','Triangle','Square','Sawtooth','Custom'];
+
+function SetWT(wt){
+wt = wt.toLowerCase();
+if(wt == 'custom'){
+	let real = new Float32Array([0,-1,0,1]);
+	let imag = new Float32Array([0,0.2,0,-0.2]);
+	let wave = audioCtx.createPeriodicWave(real, imag, {disableNormalization: true});
+	oscillator.setPeriodicWave(wave);
+}else
+	oscillator.type = wt;
+$('.wtActive').removeClass('wtActive');
+$('#WT' + wt).addClass('wtActive');
+}
+
+function SetReleaseTime(rt){
+$('#demo1')[0].opt.releaseTime = rt;
+}
+
+function SetVolume(v){
+gainMain.gain.setValueAtTime(v,audioCtx.currentTime);
+}
+
+$(document).ready(function(){
+
+$('#demo1').jsRapPiano({
+	octave:2,
+	octaves:3
+});
+
+$('#knobWave').jsRapKnob({
+steps:WF.length,
+position:1,
+onChange:function(value,step){
+	SetWT(WF[step]);
+	$('.rapKnobCaption',this).text(WF[step]);
+}
+});
+
+$('#knobRelease').jsRapKnob({
+position:0.5,
+onChange:function(value){
+	SetReleaseTime(0.1 + value * 2);
+	$('.rapKnobCaption',this).text('Release ' + Math.floor(value * 100) + '%');
+}
+});
+
+$('#knobVolume').jsRapKnob({
+position:1,
+onChange:function(value){
+	SetVolume(value);
+	$('.rapKnobCaption',this).text('Volume ' + Math.floor(value * 100) + '%');
+}
+});
+
+});
+</script>
+</head>
+<body>
+<div id="divMain">
+<div id="divGitHub">
+<div id="GitHub" onclick="location.href='https://github.com/Thibor/jsRapPiano'"></div>
+</div>
+<div id="demo1" ></div>
+
+<div class="WT">
+<div id="knobWave"></div>
+<div id="knobRelease"></div>
+<div id="knobVolume"></div>
+</div>
+
+</div>
+</body>
+</html>
