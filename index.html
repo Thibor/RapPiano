@@ -17,20 +17,36 @@ wt = wt.toLowerCase();
 if(wt == 'custom'){
 	let real = new Float32Array([0,-1,0,1]);
 	let imag = new Float32Array([0,0.2,0,-0.2]);
-	let wave = audioCtx.createPeriodicWave(real, imag, {disableNormalization: true});
-	oscillator.setPeriodicWave(wave);
+	let wave = $('#demo1')[0].audioContext.createPeriodicWave(real, imag, {disableNormalization: true});
+	$('#demo1')[0].oscillator.setPeriodicWave(wave);
 }else
-	oscillator.type = wt;
+	$('#demo1')[0].oscillator.type = wt;
 $('.wtActive').removeClass('wtActive');
 $('#WT' + wt).addClass('wtActive');
 }
 
-function SetReleaseTime(rt){
-$('#demo1')[0].opt.releaseTime = rt;
+function SetEnvelopeAttack(v){
+$('#demo1')[0].opt.envelope.attack = 0.01 + v * 0.2;
+}
+
+function SetEnvelopeDecay(v){
+$('#demo1')[0].opt.envelope.decay = 0.01 + v * 0.2;
+}
+
+function SetEnvelopeSustain(v){
+$('#demo1')[0].opt.envelope.sustain = 0.01 + v * 0.2;
+}
+
+function SetEnvelopeRelease(v){
+$('#demo1')[0].opt.envelope.release = 0.01 + v * 2;
+}
+
+function SetEnvelopeLevel(v){
+$('#demo1')[0].opt.envelope.level = 0.1 + v * 0.9;
 }
 
 function SetVolume(v){
-gainMain.gain.setValueAtTime(v,audioCtx.currentTime);
+$('#demo1')[0].gainMain.gain.setValueAtTime(v,$('#demo1')[0].audioContext.currentTime);
 }
 
 $(document).ready(function(){
@@ -49,13 +65,50 @@ onChange:function(value,step){
 }
 });
 
+$('#knobAttack').jsRapKnob({
+position:0.5,
+onChange:function(value){
+	SetEnvelopeAttack(value);
+	$('.rapKnobCaption',this).text('Attack ' + Math.floor(value * 100) + '%');
+}
+});
+SetEnvelopeAttack(0.5);
+
+$('#knobDecay').jsRapKnob({
+position:0.5,
+onChange:function(value){
+	SetEnvelopeDecay(value);
+	$('.rapKnobCaption',this).text('Decay ' + Math.floor(value * 100) + '%');
+}
+});
+SetEnvelopeDecay(0.5);
+
+$('#knobSustain').jsRapKnob({
+position:0.5,
+onChange:function(value){
+	SetEnvelopeSustain(value);
+	$('.rapKnobCaption',this).text('Sustain ' + Math.floor(value * 100) + '%');
+}
+});
+SetEnvelopeSustain(0.5);
+
 $('#knobRelease').jsRapKnob({
 position:0.5,
 onChange:function(value){
-	SetReleaseTime(0.1 + value * 2);
+	SetEnvelopeRelease(value);
 	$('.rapKnobCaption',this).text('Release ' + Math.floor(value * 100) + '%');
 }
 });
+SetEnvelopeRelease(0.5);
+
+$('#knobLevel').jsRapKnob({
+position:0.5,
+onChange:function(value){
+	SetEnvelopeLevel(value);
+	$('.rapKnobCaption',this).text('Level ' + Math.floor(value * 100) + '%');
+}
+});
+SetEnvelopeLevel(0.5);
 
 $('#knobVolume').jsRapKnob({
 position:1,
@@ -64,6 +117,7 @@ onChange:function(value){
 	$('.rapKnobCaption',this).text('Volume ' + Math.floor(value * 100) + '%');
 }
 });
+SetVolume(1);
 
 });
 </script>
@@ -77,7 +131,11 @@ onChange:function(value){
 
 <div class="WT">
 <div id="knobWave"></div>
+<div id="knobAttack"></div>
+<div id="knobDecay"></div>
+<div id="knobSustain"></div>
 <div id="knobRelease"></div>
+<div id="knobLevel"></div>
 <div id="knobVolume"></div>
 </div>
 
