@@ -30,7 +30,6 @@ $(window).resize(function () {
 			this.gainMain.connect(this.audioContext.destination);
 			this.oscillator.start(0);
 			this.oscillator.type = this.opt.waveType;
-			this.oscillator.frequency.value = 50;
 
 			this.Render = function () {
 				$(this).empty();
@@ -49,15 +48,15 @@ $(window).resize(function () {
 					mousedown: function (e) {
 						let i = $(this).prop('index');
 						let f = 440 * Math.pow(2, (i - 69) / 12);
+						base.audioContext.resume();
 						base.PlaySound(f);
 						if (base.opt.onClick)
-							base.opt.onClick.call(base);
+							base.opt.onClick.call(base, i, f);
 					}
 				});
 			}
 
 			this.PlaySound = function (frequency) {
-				this.audioContext.resume();
 				let t = this.audioContext.currentTime;
 				gainNode = this.audioContext.createGain();
 				gainNode.connect(this.gainMain);
